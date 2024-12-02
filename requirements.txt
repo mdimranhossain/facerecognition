@@ -1,0 +1,6 @@
+Flask
+Werkzeug
+DeepFace
+python-dotenv
+requests
+tensorflow

@@ -1,0 +1,10 @@
+facerecognition/
+├── app.py               # Main Flask app
+├── .env                 # Environment variables (for API keys)
+├── requirements.txt     # Python dependencies
+├── uploads/             # Directory for uploaded images
+├── scraped_images/      # Directory for downloaded scraped images
+├── templates/           # HTML templates for the app
+│   ├── index.html       # Upload form page
+│   ├── results.html     # Results display page
+└── static/              # Static assets (optional)

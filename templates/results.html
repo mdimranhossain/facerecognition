@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verification Results</title>
+    <style>
+        .text-center{
+            text-align: center;
+        }
+        .results, .result{
+            width: 100%;
+        }
+        .photo, .data{
+            display: inline-block;
+            max-width: 375px;
+        }
+    </style>
+</head>
+<body>
+    <h1 class="text-center">Verification Results</h1>
+    <div class="results text-center">
+        {% for match in matches %}
+        <div class="result">
+            <div class="photo">
+                <img src="{{ match.image }}" alt="Scraped Image" width="200">
+            </div>
+            <div class="data">
+                <p>Verified: {{ match.verified }}</p>
+                <p>Similarity Score (Distance): {{ match.distance }}</p>
+                <p>Image retrieved from: {{ match.image }}</p>
+            </div>
+        </div>
+        <hr>
+        {% endfor %}
+    </div>
+</body>
+</html>
