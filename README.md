@@ -1,12 +1,15 @@
 # facerecognition
 Face Recognition from google search
 
+*****
 Python must already be installed.
 
+*****
 Install the dependencies using:
 
 pip install -r requirements.txt
 
+*****
 Run the project
 
 python app.py
