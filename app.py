@@ -122,7 +122,8 @@ def verify_person():
             for path in scraped_image_paths:
                 os.remove(path)
 
-            return render_template('results.html', matches=matches)
+            # return render_template('results.html', matches=matches)
+            return jsonify(matches)
         except Exception as e:
             os.remove(uploaded_path)
             return jsonify({'error': str(e)}), 500

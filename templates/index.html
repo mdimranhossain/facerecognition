@@ -3,29 +3,172 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
     <title>Verify Person</title>
     <style>
-        .verify{
-            background:rgb(13,110,253);
-            color:white;
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        img {
+            max-width: 300px;
+            margin-top: 20px;
+            border: 1px solid #ccc;
+            padding: 5px;
+            display: block;
+        }
+        .container{
+            max-width: 1140px;
+            margin: 0 auto;
+        }
+        #upload{
+            width: 30%;
+            display: inline-block;
+        }
+        #submit{
+            color: #fff;
+            background:#0074d9;
+            border-radius: 3px;
             padding: 5px 10px;
-            font-size: 20px;
-            border-radius: 15px;
+            -webkit-appearance: none;
+        }
+        #results {
+            width:65%;
+            border: 2px solid #000;
+            display: inline-block;
+            min-height: 540px;
+            max-height:550px;
+            overflow-x: hidden;
+            overflow-y: scroll;
+            vertical-align: top;
+        }
+        #results h2{
+            text-align: center;
+        }
+        .result img {
+            max-width: 200px;
+            margin: 10px 0;
+        }
+        .result {
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 20px;
+        }
+        .result .image, .result .info{
+            max-width: 50%;
+            display: inline-block;
+            vertical-align: top;
+        }
+        .error {
+            color: red;
+        }
+        @media screen and (max-width:820px) {
+            #upload{
+            width: 100%;
+            }
+            #results {
+                width:100%;
+            }
         }
     </style>
 </head>
 <body>
-    <div style="max-width: 100%; text-align: center;">
-        <h1>Verify a Person</h1>
-        <form action="/verify" method="post" enctype="multipart/form-data">
-            <label for="file">Upload Image:</label>
-            <input type="file" name="file" id="file" required>
-            <br><br>
-            <label for="query">Search Query (e.g., Name):</label>
-            <input type="text" name="query" id="query" required>
-            <br><br>
-            <button class="verify" type="submit">Verify</button>
-        </form>
+    <div class="container">
+        <div id="upload">
+            <h1>Verify a Person</h1>
+            <div class="photo">
+                <img id="uploadedImage" src="" alt="Uploaded Image" style="display: none;">
+            </div>
+            <form id="uploadForm">
+                <label for="file">Upload Image:</label>
+                <input type="file" name="file" id="file" accept="image/*" required>
+                <br><br>
+                <label for="query">Search Query:</label>
+                <input type="text" name="query" id="query" placeholder=" e.g., Name" required>
+                <br><br>
+                <button id="submit" type="submit">Verify</button>
+            </form>
+        </div>  
+    
+        <div id="results"><h2>Results:</h2></div>
+        <div class="error" id="error"></div>
     </div>
+
+    <script>
+        document.getElementById('file').addEventListener('change', function(e) {
+            e.preventDefault();
+
+            const formData = new FormData();
+            const fileInput = document.getElementById('file');
+            const queryInput = document.getElementById('query');
+            const uploadedImage = document.getElementById('uploadedImage');
+            const resultsDiv = document.getElementById('results');
+            const errorDiv = document.getElementById('error');
+
+            // Reset previous results and errors
+            resultsDiv.innerHTML = '<h2>Results:</h2>';
+            errorDiv.textContent = '';
+
+            
+
+            // Show the uploaded image preview
+            const file = fileInput.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    uploadedImage.src = e.target.result;
+                    uploadedImage.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Send the form data via AJAX
+        document.getElementById('uploadForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData();
+            const fileInput = document.getElementById('file');
+            const queryInput = document.getElementById('query');
+            const uploadedImage = document.getElementById('uploadedImage');
+            const resultsDiv = document.getElementById('results');
+            const errorDiv = document.getElementById('error');
+            // Append form data
+            formData.append('file', fileInput.files[0]);
+            formData.append('query', queryInput.value);
+            
+            fetch('/verify', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    errorDiv.textContent = `Error: ${data.error}`;
+                } else if (data.length === 0) {
+                    errorDiv.textContent = 'No results found.';
+                } else {
+                    resultsDiv.innerHTML = '<h2>Results:</h2>';
+                    data.forEach(match => {
+                        const resultDiv = document.createElement('div');
+                        resultDiv.classList.add('result');
+                        resultDiv.innerHTML = `
+                            <div class="image">
+                                <img src="${match.image}" alt="Matched Image">
+                            </div>
+                            <div class="info">
+                                <p><strong>Image Source:</strong> ${match.image}</p>
+                                <p><strong>Verified:</strong> ${match.verified}</p>
+                                <p><strong>Distance:</strong> ${match.distance.toFixed(4)}</p>
+                            </div>
+                        `;
+                        resultsDiv.appendChild(resultDiv);
+                    });
+                }
+            })
+            .catch(err => {
+                errorDiv.textContent = `An error occurred: ${err.message}`;
+            });
+        });
+    </script>
 </body>
 </html>
