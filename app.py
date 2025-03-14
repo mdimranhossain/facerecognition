@@ -5,6 +5,9 @@ from werkzeug.utils import secure_filename
 from deepface import DeepFace
 from dotenv import load_dotenv
 
+# Disable GPU usage by TensorFlow
+os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
+
 # Load environment variables
 load_dotenv()
 

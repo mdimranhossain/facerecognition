@@ -3,4 +3,4 @@ Werkzeug
 DeepFace
 python-dotenv
 requests
-tensorflow
+tensorflow==2.10.0
